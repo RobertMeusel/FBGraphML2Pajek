@@ -18,7 +18,19 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.tinkerpop.blueprints.util.io.graphml.GraphMLReader;
 
-//TODO add age (calculated from birthday)
+/**
+ * Small parser which converts the .graphml file provided by the NameGenWeb
+ * Application of the Oxofor Internet Institute, University of Oxford into Pajek
+ * readable files. The general network structure will be stored in the .net
+ * file. Vertex labels as gender, relationship_status and locale will be stored
+ * in the partion files *.clu. The number of likes and number of friends of each
+ * vertex will be stored in the vector file (*.vec).
+ * 
+ * @author Robert Meusel (robert.meusel@freenet.de)
+ * 
+ */
+// TODO add age (calculated from birthday)
+// TODO allow conversion of anonymized files.
 public class FBGraphMLParser {
 
 	private static final String XML_FILE = "profile.graphml";
@@ -108,10 +120,12 @@ public class FBGraphMLParser {
 							+ vertex.getProperty("Label") + "\"\n");
 				}
 				int sex = 2;
-				if (vertex.getProperty("sex").equals("female")) {
-					sex = 0;
-				} else if (vertex.getProperty("sex").equals("male")) {
-					sex = 1;
+				if (vertex.getProperty("sex") != null) {
+					if (vertex.getProperty("sex").equals("female")) {
+						sex = 0;
+					} else if (vertex.getProperty("sex").equals("male")) {
+						sex = 1;
+					}
 				}
 				sexCluWriter.write(" " + sex + "\n");
 				// locale cannot be null here
@@ -171,6 +185,7 @@ public class FBGraphMLParser {
 				rmWriter.write("** " + rStatus.indexOf(s) + " = " + s + "\n");
 			}
 
+			// Close all writer
 			rmWriter.flush();
 			rmWriter.close();
 
